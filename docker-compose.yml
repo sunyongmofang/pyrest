@@ -1,0 +1,9 @@
+version: '3.4'
+
+services:
+
+  pyrest:
+    container_name: pyrest
+    build: .
+    ports:
+     - "6000:6000"
