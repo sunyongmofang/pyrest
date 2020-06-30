@@ -1,13 +1,15 @@
 import pandas
 from sqlalchemy import create_engine
 
+from .Config import Config
+
 
 class DatabaseOperate(object):
     engine = None
 
     def __init__(self):
         if not DatabaseOperate.engine:
-            dbUrl = 'postgresql+psycopg2://master:123456@127.0.0.1:5432/test'
+            dbUrl = Config.config.database.URL
             DatabaseOperate.engine = create_engine(
                 dbUrl,
                 pool_size=20,

@@ -11,9 +11,7 @@ class NativeSelect(Resource):
         self.asm = AssembleSql()
 
     def get(self, DATABASE_, SCHEMA_, TABLE_):
-        print(123456)
-        # params = request.values
-        params = {}
+        params = request.values
         sqlStr, whereMap = self.asm.getMethod(DATABASE_, SCHEMA_, TABLE_, params)
         res = self.dbo.execute(sqlStr, whereMap)
         return res

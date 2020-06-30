@@ -1,0 +1,16 @@
+
+[jwt]
+default = false
+
+[http]
+port = 6000
+
+[postgres]
+host = "127.0.0.1"
+port = 5432
+user = "master"
+pass = "123456"
+database = "test"
+
+[queries]
+location = "/tmp/"

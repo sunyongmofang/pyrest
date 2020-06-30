@@ -1,5 +1,6 @@
 from App import AssembleSql
 from App import DatabaseOperate
+from App import Config
 
 
 if __name__ == '__main__':
@@ -16,5 +17,22 @@ if __name__ == '__main__':
     dbo = DatabaseOperate()
     res = dbo.execute(sqlStr, whereMap)
     print(res)
+
+    config = Config.config
+    if not Config.config:
+        Config('./prest.toml')
+        config = Config.config
+
+    print(config.http.port)
+    print(config.jwt.default)
+    print(config.jwt.key)
+    print(config.jwt.algo)
+    print(config.database.host)
+    print(config.database.port)
+    print(config.database.user)
+    print(config.database._pass)
+    print(config.database.database)
+    print(config.database.URL)
+    print(config.queries.location)
 
 
