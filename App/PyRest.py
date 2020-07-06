@@ -3,13 +3,15 @@ from flask_restful import Api
 
 from .NativeSelect import NativeSelect
 from .Config import Config
+from .Logging import Logging
 
 
 class PyRest(object):
 
     @staticmethod
-    def main(configPath):
+    def main(configPath, pyContext):
         Config(configPath)
+        Logging(pyContext)
         PyRest().runRest()
 
     def runRest(self):

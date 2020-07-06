@@ -1,4 +1,6 @@
 
+debug = true
+
 [jwt]
 default = false
 

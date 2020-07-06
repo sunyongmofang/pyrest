@@ -1,61 +1,86 @@
-from sqlalchemy import text
 import logging
+import operator
+
+from sqlalchemy import text
+from sqlalchemy import func
+from sqlalchemy import desc
+from sqlalchemy import MetaData
+from sqlalchemy import Table
+from sqlalchemy.sql import select
+from sqlalchemy.sql import and_
+
+from .Config import Config
+from .Logging import Logging
+from .DatabaseOperate import DatabaseOperate
 
 
 class AssembleSql(object):
 
     def __init__(self):
-        self.SELECT = 'select'
-        self.FROM = 'from'
-        self.WHERE = 'where'
-        self.JOIN = 'join'
-        self.ON = 'on'
-        self.GROUPBY = 'group by'
-        self.ORDERBY = 'order by'
-        self.LEFT = 'left'
-        self.RIGHT = 'right'
-        self.LIMIT = 'limit'
-        self.OFFSET = 'offset'
-        self.AND = 'and'
-        self.COUNT = 'count'
+        self.keyword = ['_select', '_count', '_page',
+                        '_page_size', '_groupby', '_orderby']
+        self.keywordSet = set(self.keyword)
+        self.dbo = DatabaseOperate()
 
-    def getMethod(self, DATABASE_, SCHEMA_, TABLE_, params):
-        keyword = ['_select', '_count', '_page', '_page_size', '_groupby']
-        values = [params.get(x) for x in keyword]
-        asterisk = '*'
-        empty = ''
+    def getMethod(self, SCHEMA_: str, TABLE_: str, params):
+        def attrgetter(obj, att): return operator.attrgetter(att)(obj)
+        tableModel = self.getModel(SCHEMA_, TABLE_)
+        values = [params.get(x) for x in self.keyword]
         result = None
-        whereMap = {}
 
-        tablename = '{DATABASE_}.{SCHEMA_}.{TABLE_}'.format(DATABASE_=DATABASE_, SCHEMA_=SCHEMA_, TABLE_=TABLE_)
-        _select = values[0] if values[0] else asterisk
-        _count = '{COUNT}({_count})'.format(COUNT=self.COUNT, _count=values[1]) if values[1] else empty
+        _select = values[0].split(',') if values[0] else None
+        _count = [func.count(attrgetter(tableModel.c, values[1])).label(
+            'count')] if values[1] else None
         _page = None
         _page_size = None
-        _groupby = values[4]
-        _fields = _count if _count else _select
+        _groupby = values[4].split(',') if values[4] else [None]
+        _orderby = [x if '-' == x[0] else desc(x[1:])
+                    for x in values[5].split(',')] if values[5] else [None]
         if values[2] and values[3]:
             _page = values[2]
             _page_size = values[3]
 
-        result = '{SELECT} {_fields} {FROM} {tablename}'.format(
-            SELECT=self.SELECT,
-            _fields=_fields,
-            FROM=self.FROM,
-            tablename=tablename
-        )
+        _where = [attrgetter(tableModel.c, key) == params.get(key)
+                  for key in params if key not in self.keywordSet]
 
-        _where = []
-        for key in params:
-            if key not in keyword:
-                value = params.get(key)
-                _where.append('{key} = :{key}'.format(key=key))
-                whereMap[key] = value
-        if _where:
-            result += ' {WHERE} '.format(WHERE=self.WHERE) + \
-                ' {AND} '.format(AND=self.AND).join(_where)
-        if _groupby:
-            result += ' {GROUPBY} {_groupby}'.format(GROUPBY=self.GROUPBY, _groupby=_groupby)
-        logging.basicConfig(level=logging.DEBUG)
-        logging.debug(result)
-        return text(result), whereMap
+        _fields = None
+        if _select or _count:
+            _fields = _count if _count else [attrgetter(
+                tableModel.c, x) if x else x for x in _select]
+        else:
+            _fields = [tableModel]
+
+        result = select(_fields).where(
+            and_(*_where)).group_by(*_groupby).order_by(*_orderby)
+        Logging.debuglog(result)
+        return self.dbo.query(result)
+
+    def postMethod(self, SCHEMA_: str, TABLE_: str, data):
+        tableModel = self.getModel(SCHEMA_, TABLE_)
+        result = tableModel.insert().values(**data)
+        return self.dbo.execute(result)
+
+    def delMethod(self, SCHEMA_: str, TABLE_: str, params):
+        def attrgetter(obj, att): return operator.attrgetter(att)(obj)
+        tableModel = self.getModel(SCHEMA_, TABLE_)
+
+        _where = [attrgetter(tableModel.c, key) == params.get(key)
+                  for key in params if key not in self.keywordSet]
+        result = tableModel.delete().where(and_(*_where))
+        return self.dbo.execute(result)
+
+    def putMethod(self, SCHEMA_: str, TABLE_: str, params, data):
+        def attrgetter(obj, att): return operator.attrgetter(att)(obj)
+        tableModel = self.getModel(SCHEMA_, TABLE_)
+
+        _where = [attrgetter(tableModel.c, key) == params.get(key)
+                  for key in params if key not in self.keywordSet]
+        result = tableModel.update().where(and_(*_where)).values(**data)
+        return self.dbo.execute(result)
+
+    def getModel(self, SCHEMA_: str, TABLE_: str) -> Table:
+        if not DatabaseOperate.engine:
+            return None
+        metadata = MetaData(DatabaseOperate.engine)
+        _table = Table(TABLE_, metadata, schema=SCHEMA_, autoload=True)
+        return _table

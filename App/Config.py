@@ -15,16 +15,20 @@ class Config(object):
 class ConfigObj(object):
 
     def __init__(self, tomlObj):
+        self.DEBUG = 'debug'
+        def getValue(obj, key, default): return obj[key] if obj and key in obj else default
+
         self.http = HttpConf(tomlObj)
         self.jwt = JwtObj(tomlObj)
         self.database = DatabaseObj(tomlObj)
         self.queries = QueriesObj(tomlObj)
+        self.debug = getValue(tomlObj, self.DEBUG, False)
 
 
 class HttpConf(object):
 
     def __init__(self, tomlObj):
-        getValue = lambda obj, key, default: obj[key] if obj and key in obj else default
+        def getValue(obj, key, default): return obj[key] if obj and key in obj else default
 
         self.HTTP = 'http'
         self.PORT = 'port'
@@ -36,7 +40,7 @@ class HttpConf(object):
 class JwtObj(object):
 
     def __init__(self, tomlObj):
-        getValue = lambda obj, key, default: obj[key] if obj and key in obj else default
+        def getValue(obj, key, default): return obj[key] if obj and key in obj else default
 
         self.JWT = 'jwt'
         self.DEFAULT = 'default'
@@ -49,15 +53,14 @@ class JwtObj(object):
         self.algo = getValue(selfObj, self.ALGO, None)
 
 
-
 class DatabaseObj(object):
 
     def __init__(self, tomlObj):
-        getValue = lambda obj, key, default: obj[key] if obj and key in obj else default
+        def getValue(obj, key, default): return obj[key] if obj and key in obj else default
         databaseList = ['postgres']
         databaseType = [x for x in databaseList if x in tomlObj][0]
         selfObj = tomlObj[databaseType]
-        
+
         self.HOST = 'host'
         self.USER = 'user'
         self.PASS = 'pass'
@@ -84,7 +87,7 @@ class DatabaseObj(object):
 class QueriesObj(object):
 
     def __init__(self, tomlObj):
-        getValue = lambda obj, key, default: obj[key] if obj and key in obj else default
+        def getValue(obj, key, default): return obj[key] if obj and key in obj else default
 
         self.QUERIES = 'queries'
         self.LOCATION = 'location'

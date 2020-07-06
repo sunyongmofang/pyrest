@@ -1,38 +1,64 @@
 from App import AssembleSql
 from App import DatabaseOperate
 from App import Config
+from App import Logging
+from sqlalchemy import text
 
 
 if __name__ == '__main__':
+
+    Config('./prest.toml')
+    config = Config.config
+
+    Logging(__name__)
+    debuglog = Logging.debuglog
+
+    # debuglog(config.http.port)
+    # debuglog(config.jwt.default)
+    # debuglog(config.jwt.key)
+    # debuglog(config.jwt.algo)
+    # debuglog(config.database.host)
+    # debuglog(config.database.port)
+    # debuglog(config.database.user)
+    # debuglog(config.database._pass)
+    # debuglog(config.database.database)
+    # debuglog(config.database.URL)
+    # debuglog(config.queries.location)
+    # debuglog(config.debug)
+
+    dbo = DatabaseOperate()
     asm = AssembleSql()
+
     params = {
         # '_count': 'f_student_name',
         # '_select': 'f_student_id',
-        # '_groupby': 'f_student_id',
-        'f_student_id': '1',
-        'f_student_name': '张三'
+        # '_groupby': 'f_student_name',
+        # 'f_student_name': '张三',
+        # 'f_student_id': '1'
     }
-    sqlStr, whereMap = asm.getMethod('test', 'public', 't_student', params)
+    data = {
+        'f_student_name': 'laola'
+    }
 
-    dbo = DatabaseOperate()
-    res = dbo.execute(sqlStr, whereMap)
-    print(res)
+    updateParams = {
+        'f_student_id': 11
+    }
+    updateData = {
+        'f_student_name': 'laola11'
+    }
 
-    config = Config.config
-    if not Config.config:
-        Config('./prest.toml')
-        config = Config.config
+    res = asm.getMethod('public', 't_student', params)
+    # try打印
 
-    print(config.http.port)
-    print(config.jwt.default)
-    print(config.jwt.key)
-    print(config.jwt.algo)
-    print(config.database.host)
-    print(config.database.port)
-    print(config.database.user)
-    print(config.database._pass)
-    print(config.database.database)
-    print(config.database.URL)
-    print(config.queries.location)
+    # insertObject = asm.postMethod('public', 't_student', data)
+    # res = dbo.execute(insertObject)
+
+    # sqlObj = asm.putMethod('public', 't_student', updateParams, updateData)
+    # res = dbo.execute(sqlObj)
+
+    debuglog(res)
+    
+
+
 
 
