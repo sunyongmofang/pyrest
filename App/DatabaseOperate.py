@@ -1,7 +1,6 @@
 import pandas
 from sqlalchemy import create_engine
-from sqlalchemy import MetaData
-from sqlalchemy import Table
+from sqlalchemy import text
 
 from .Config import Config
 from .Logging import Logging
@@ -20,7 +19,7 @@ class DatabaseOperate(object):
                 echo=Config.config.debug
             )
 
-    def query(self, sqlObj):
+    def query(self, sqlObj: text):
         res = None
         connect = None
         try:
@@ -33,7 +32,7 @@ class DatabaseOperate(object):
                 connect.close()
         return res
 
-    def execute(self, sqlObject, params=None):
+    def execute(self, sqlObject: text, params: dict = None):
         res = None
         connect = None
         try:

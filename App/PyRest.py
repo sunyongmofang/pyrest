@@ -9,7 +9,7 @@ from .Logging import Logging
 class PyRest(object):
 
     @staticmethod
-    def main(configPath, pyContext):
+    def main(configPath: str, pyContext: str):
         Config(configPath)
         Logging(pyContext)
         PyRest().runRest()

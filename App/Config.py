@@ -4,7 +4,7 @@ import toml
 class Config(object):
     config = None
 
-    def __init__(self, configPath):
+    def __init__(self, configPath: str):
         with open(configPath, 'r') as fp:
             toml_string = fp.read()
             self.tomlObj = toml.loads(toml_string)
@@ -14,7 +14,7 @@ class Config(object):
 
 class ConfigObj(object):
 
-    def __init__(self, tomlObj):
+    def __init__(self, tomlObj: dict):
         self.DEBUG = 'debug'
         def getValue(obj, key, default): return obj[key] if obj and key in obj else default
 
@@ -27,7 +27,7 @@ class ConfigObj(object):
 
 class HttpConf(object):
 
-    def __init__(self, tomlObj):
+    def __init__(self, tomlObj: dict):
         def getValue(obj, key, default): return obj[key] if obj and key in obj else default
 
         self.HTTP = 'http'
@@ -39,7 +39,7 @@ class HttpConf(object):
 
 class JwtObj(object):
 
-    def __init__(self, tomlObj):
+    def __init__(self, tomlObj: dict):
         def getValue(obj, key, default): return obj[key] if obj and key in obj else default
 
         self.JWT = 'jwt'
@@ -55,7 +55,7 @@ class JwtObj(object):
 
 class DatabaseObj(object):
 
-    def __init__(self, tomlObj):
+    def __init__(self, tomlObj: dict):
         def getValue(obj, key, default): return obj[key] if obj and key in obj else default
         databaseList = ['postgres']
         databaseType = [x for x in databaseList if x in tomlObj][0]
@@ -86,7 +86,7 @@ class DatabaseObj(object):
 
 class QueriesObj(object):
 
-    def __init__(self, tomlObj):
+    def __init__(self, tomlObj: dict):
         def getValue(obj, key, default): return obj[key] if obj and key in obj else default
 
         self.QUERIES = 'queries'

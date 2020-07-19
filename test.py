@@ -12,6 +12,7 @@ if __name__ == '__main__':
 
     Logging(__name__)
     debuglog = Logging.debuglog
+    infolog = Logging.infolog
 
     # debuglog(config.http.port)
     # debuglog(config.jwt.default)
@@ -47,8 +48,47 @@ if __name__ == '__main__':
         'f_student_name': 'laola11'
     }
 
-    res = asm.getMethod('public', 't_student', params)
-    # try打印
+    # res = asm.getMethod('public', 't_student', {})
+    # infolog('1.显示全部数据：\n')
+    # infolog(res)
+
+    # res = asm.getMethod('public', 't_student', {
+    #     '_select': 'f_student_id'
+    # })
+    # infolog('2.只展现学生id：\n')
+    # infolog(res)
+
+    # res = asm.getMethod('public', 't_student', {
+    #     '_select': '*'
+    # })
+    # infolog('3.显示全部数据：\n')
+    # infolog(res)
+
+    # res = asm.getMethod('public', 't_student', {
+    #     '_count': '*'
+    # })
+    # infolog('4.count*：\n')
+    # infolog(res)
+
+    # res = asm.getMethod('public', 't_student', {
+    #     '_count': 'f_student_id'
+    # })
+    # infolog('5.count f_student_id：\n')
+    # infolog(res)
+
+    # res = asm.getMethod('public', 't_student', {
+    #     '_page': '4',
+    #     '_page_size': '10',
+    #     '_orderby': '-f_student_id'
+    # })
+    # infolog('6.分页第一页：\n')
+    # infolog(res)
+
+    # res = asm.getMethod('public', 't_student', {
+    #     'f_student_id': '2'
+    # })
+    # infolog('7.查询f_student_id为2的结果：\n')
+    # infolog(res)
 
     # insertObject = asm.postMethod('public', 't_student', data)
     # res = dbo.execute(insertObject)
@@ -56,7 +96,6 @@ if __name__ == '__main__':
     # sqlObj = asm.putMethod('public', 't_student', updateParams, updateData)
     # res = dbo.execute(sqlObj)
 
-    debuglog(res)
     
 
 
