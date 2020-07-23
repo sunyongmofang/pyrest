@@ -30,13 +30,13 @@ if __name__ == '__main__':
     dbo = DatabaseOperate()
     asm = AssembleSql()
 
-    params = {
+    # params = {
         # '_count': 'f_student_name',
         # '_select': 'f_student_id',
         # '_groupby': 'f_student_name',
         # 'f_student_name': '张三',
         # 'f_student_id': '1'
-    }
+    # }
     data = {
         'f_student_name': 'laola'
     }
