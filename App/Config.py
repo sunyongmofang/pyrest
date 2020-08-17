@@ -74,11 +74,12 @@ class DatabaseObj(object):
         self.port = getValue(selfObj, self.PORT, 5432)
         self.database = getValue(selfObj, self.DATABASE, 'test')
 
-        self._url = '{databaseType}://{user}:{_pass}@{host}/{database}'.format(
+        self._url = '{databaseType}://{user}:{_pass}@{host}:{port}/{database}'.format(
             databaseType=databaseType,
             user=self.user,
             _pass=self._pass,
             host=self.host,
+            port=self.port,
             database=self.database
         )
         self.URL = getValue(selfObj, self.URL, self._url)

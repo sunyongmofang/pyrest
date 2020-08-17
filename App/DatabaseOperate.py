@@ -43,4 +43,4 @@ class DatabaseOperate(object):
         finally:
             if connect:
                 connect.close()
-        return { 'a_n': res}
+        return { 'a_n': res }
