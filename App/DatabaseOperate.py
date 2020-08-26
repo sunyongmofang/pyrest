@@ -1,4 +1,5 @@
 import pandas
+import json
 from sqlalchemy import create_engine
 from sqlalchemy import text
 
@@ -24,7 +25,8 @@ class DatabaseOperate(object):
         connect = None
         try:
             connect = DatabaseOperate.engine.connect()
-            res = pandas.read_sql(sqlObj, connect).to_dict(orient='records')
+            res = pandas.read_sql(sqlObj, connect).to_json(orient='records')
+            res = json.loads(res)
         except Exception as e:
             Logging.debuglog(e)
         finally:
