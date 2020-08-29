@@ -13,10 +13,6 @@ from .TableMeta import TableMeta
 class AssembleSql(object):
 
     def __init__(self):
-        self.STAR = '*'
-        self.keyword = ['_select', '_count', '_page',
-                        '_page_size', '_groupby', '_order']
-        self.keywordSet = set(self.keyword)
         self.dbo = DatabaseOperate()
 
     def getMethod(self, SCHEMA_: str, TABLE_: str, params: dict):
@@ -24,8 +20,9 @@ class AssembleSql(object):
 
         _select = tableMeta.getSelect(params)
         _where = tableMeta.getWhere(params)
-        _groupby = tableMeta.getGroupby(params)
+        _groupby, _having = tableMeta.getGroupby(params)
         _orderby = tableMeta.getOrderby(params)
+        _distinct = tableMeta.getDistinct(params)
         _limit, _offset = tableMeta.getPage(params)
 
         result = select(_select) \
@@ -34,6 +31,11 @@ class AssembleSql(object):
             .order_by(*_orderby) \
             .limit(_limit) \
             .offset(_offset)
+        if _having and _having[0] is not None:
+            for h in _having:
+                result = result.having(h)
+        if _distinct:
+            result = result.distinct()
         Logging.debuglog(result)
         return self.dbo.query(result)
 
